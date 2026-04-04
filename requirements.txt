@@ -1,0 +1,15 @@
+langchain-community
+langchain-core
+langchain-groq
+langchain-google-genai
+pymysql
+python-dotenv
+streamlit
+sqlalchemy
+chromadb
+langchain-chroma
+sentence-transformers
+sqlglot
+langchain-huggingface
+ragas
+tiktoken
