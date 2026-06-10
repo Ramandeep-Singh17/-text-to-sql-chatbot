@@ -277,7 +277,21 @@ with st.sidebar:
                 with st.spinner("Connecting..."):
                     encoded_password = quote_plus(password)
                     mysql_uri = f"mysql+pymysql://{username}:{encoded_password}@{host}:{int(port)}/{database}"
-                    db = SQLDatabase.from_uri(mysql_uri, sample_rows_in_table_info=2)
+
+                    # ── FIX: Railway MySQL timeout handling ──
+                    # Railway apne idle connections ~300 sec mein kill kar deta hai.
+                    # pool_pre_ping: har query se pehle connection check karta hai
+                    # pool_recycle: 280 sec baad connection khud refresh kar lo
+                    # connect_timeout: agar server respond na kare toh 10 sec mein fail ho
+                    db = SQLDatabase.from_uri(
+                        mysql_uri,
+                        sample_rows_in_table_info=2,
+                        engine_args={
+                            "pool_pre_ping": True,
+                            "pool_recycle": 280,
+                            "connect_args": {"connect_timeout": 10}
+                        }
+                    )
 
                     llm = ChatGroq(
                         model="llama-3.1-8b-instant",
